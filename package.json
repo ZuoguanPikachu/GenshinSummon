@@ -1,0 +1,24 @@
+{
+  "name": "summon",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@opentiny/vue": "^3.19.0",
+    "echarts": "^5.5.1",
+    "lodash": "^4.17.21",
+    "pinia": "^2.2.4",
+    "vue": "^3.5.12",
+    "vue-echarts": "^7.0.3",
+    "vue-router": "^4.4.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.4",
+    "vite": "^5.4.10"
+  }
+}
