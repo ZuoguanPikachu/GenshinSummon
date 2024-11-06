@@ -1,42 +1,66 @@
-import { last, drop, fill, concat } from "lodash"
-import nj from 'https://cdn.jsdelivr.net/npm/@d4c/numjs/build/module/numjs.min.js'
+import { last, drop, fill, concat, sum, reverse, slice } from "lodash"
 
+
+function add(arr_a, arr_b) {
+  var length = arr_a.length
+  var result = Array(length)
+
+  for (let index = 0; index < length; index++) {
+    result[index] = arr_a[index] + arr_b[index]
+  }
+  return result
+}
+
+function multiply(arr_a, arr_b) {
+  var length = arr_a.length
+  var result = Array(length)
+
+  if (arr_b.length == 1) {
+    let k = arr_b[0];
+    for (let index = 0; index < length; index++) {
+      result[index] = arr_a[index] * k
+    }
+  } else {
+    for (let index = 0; index < length; index++) {
+      result[index] = arr_a[index] * arr_b[index]
+    }
+  }
+  return result
+}
 
 function pad(arr, pad_width){
-  arr = arr.tolist()
-  arr = concat(
+  var result = concat(
     fill(Array(pad_width), 0), arr, fill(Array(pad_width), 0)
   )
-  return nj.array(arr)
+  return result
 }
 
 function convolve(arr_a, arr_b) {
-  var arr_b_length = arr_b.shape[0]
-  var result_length = arr_a.shape[0] + arr_b_length - 1
-  arr_b = arr_b.slice([null, null, -1])
+  var arr_b_length = arr_b.length
+  var result_length = arr_a.length + arr_b_length - 1
+  arr_b = reverse(arr_b)
 
   var padded_arr_a = pad(arr_a, arr_b_length - 1)
-  var result = fill(Array(result_length), 0)
+  var result = Array(result_length)
 
   for (let index = 0; index < result_length; index++) {
-    result[index] = nj.sum(
-      nj.multiply(
-        padded_arr_a.slice([index, index + arr_b_length]), arr_b
+    result[index] = sum(
+      multiply(
+        slice(padded_arr_a, index, index + arr_b_length), arr_b
       )
     )
   }
-  return nj.array(result)
+  return result
 }
 
 function cumsum(arr) {
-  arr = arr.tolist()
   var result = [arr[0]]
 
   for (let index = 1; index < arr.length; index++) {
     result.push(last(result) + arr[index])
   }
 
-  return nj.array(result)
+  return result
 }
 
 function basicDist(cumulative_n=0) {
@@ -61,8 +85,8 @@ function basicDist(cumulative_n=0) {
 
     if (last(cumulative_probs) >= 1.0){
       return {
-        probs: nj.array(probs),
-        cumulative_probs: nj.array(drop(cumulative_probs))
+        probs: probs,
+        cumulative_probs: drop(cumulative_probs)
       }
     }
   }
@@ -77,15 +101,15 @@ export function up5StarCharacterDist(item_nums=1, cumulative_n=0, is_up_pity=fal
       var dist1 = basicDist(cumulative_n)
       var dist2 = basicDist()
       
-      var with_pity_part_probs = nj.concatenate(
-        nj.array([0.0]), convolve(dist1.probs, dist2.probs)
-      ).multiply(0.5)
-
-      var without_pity_part_probs = nj.concatenate(
-        dist1.probs.multiply(0.5), nj.array(fill(Array(90), 0.0))
+      var with_pity_part_probs = multiply(
+        concat([0.0], convolve(dist1.probs, dist2.probs)),
+        [0.5]
+      )
+      var without_pity_part_probs = concat(
+        multiply(dist1.probs, [0.5]), fill(Array(90), 0.0)
       )
 
-      var probs = nj.add(with_pity_part_probs, without_pity_part_probs)
+      var probs = add(with_pity_part_probs, without_pity_part_probs)
       var cumulative_probs = cumsum(probs)
       
       return {

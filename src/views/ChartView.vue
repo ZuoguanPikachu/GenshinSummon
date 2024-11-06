@@ -36,8 +36,8 @@ const { itemNum, cumulativeN, isUpPity } = storeToRefs(useSummonParamsStore())
 const router = useRouter()
 
 var dist = up5StarCharacterDist(itemNum.value, cumulativeN.value, isUpPity.value == "1")
-var probs = dist.probs.tolist()
-var cumulative_probs = dist.cumulative_probs.tolist()
+var probs = dist.probs
+var cumulative_probs = dist.cumulative_probs
 var states = range(1, probs.length + 1)
 
 const option = ref({
