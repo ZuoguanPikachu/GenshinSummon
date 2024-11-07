@@ -38,7 +38,7 @@ const router = useRouter()
 var dist = up5StarCharacterDist(itemNum.value, cumulativeN.value, isUpPity.value == "1")
 var probs = dist.probs
 var cumulative_probs = dist.cumulative_probs
-var states = range(1, probs.length + 1)
+var states = range(itemNum.value, probs.length + itemNum.value)
 
 const option = ref({
   title: [
